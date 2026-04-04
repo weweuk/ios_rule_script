@@ -1,0 +1,39 @@
+name: Sync Upstream and Push to GitLab
+
+on:
+  schedule:
+    - cron: '0 3 * * *' 
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
+
+jobs:
+  sync-and-mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync Fork with Upstream
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh repo sync ${{ github.repository }} --force
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to GitLab via Token
+        run: |
+          # 【请根据实际情况修改以下变量】
+          GITLAB_HOST="gitlab.com"
+          GITLAB_USER="weweuk"
+          GITLAB_REPO="ios-rule-script"
+          
+          # 构造带 Token 的 HTTPS 地址
+          # 格式：https://oauth2:TOKEN@HOST/USER/REPO.git
+          # 注意：GitLab 推荐使用 oauth2 作为用户名来配合 Access Token
+          REMOTE_URL="https://oauth2:${{ secrets.GITLAB_TOKEN }}@${GITLAB_HOST}/${GITLAB_USER}/${GITLAB_REPO}.git"
+          
+          git push "$REMOTE_URL" --all --force
+          git push "$REMOTE_URL" --tags --force
