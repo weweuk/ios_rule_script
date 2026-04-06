@@ -34,7 +34,7 @@ jobs:
           
           # 使用 Token 构建带权限的 HTTPS 地址
           # 格式为：https://用户名:Token@域名/用户名/仓库名.git
-          REMOTE_URL="https://${GITEA_COM_USER}:${{ secrets.GITEA_TOKEN }}@${GITEA_HOST}/${GITEA_USER}/${GITEA_REPO}.git"
+          REMOTE_URL="https://${GITEA_USER}:${{ secrets.GITEA_COM_TOKEN }}@${GITEA_HOST}/${GITEA_USER}/${GITEA_REPO}.git"
           
           # 强制推送
           git push "$REMOTE_URL" --all --force
